@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+
+if [ -f "~/.ssh/id_ed25519" ]; then
+  printf "SSH key already exists!"
+  exit 0
+fi
+
 eval `ssh-agent -s`
 
 eval `ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -q -N ""`
@@ -29,5 +35,5 @@ source ~/.bashrc
 
 pubkey=$(cat ~/.ssh/id_ed25519.pub)
 
-printf "***\n\n SSH_KEY: $pubkey \n***\n\n"
+printf "\n\n\n $pubkey \n\n\n"
 
