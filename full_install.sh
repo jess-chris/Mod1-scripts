@@ -10,16 +10,21 @@ export NVM_DIR="$HOME/.nvm"
 
 eval `nvm install 16`
 
-eval `ssh-agent -s`
+if ! [ $(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then
+  eval `ssh-agent -s &>/dev/null`
+fi
 
-eval `ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -q -N ""`
-
+if [ -f "~/.ssh/id_ed25519" ]; then
+  printf "SSH key already exists!"
+else
+  eval `ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -q -N ""`
+fi
 
 # WSL or Linux
 if [[ $(uname) == "Linux" ]]; then
 
   if ! grep -Fq "ssh-agent" ~/.bashrc; then
-    printf "eval \`ssh-agent -s\`\n" >> ~/.bashrc
+    printf "if ! [ \$(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then\n  eval \`ssh-agent -s &>/dev/null\`\nfi" >> ~/.bashrc
   fi
 
   printf "Host github.com\n    UpdateHostKeys yes\n    IdentityFile /home/$USER/.ssh/id_ed25519\n" >> ~/.ssh/config
@@ -28,7 +33,7 @@ if [[ $(uname) == "Linux" ]]; then
 elif [[ $(uname) == "Darwin" ]]; then
 
   if ! grep -Fq "ssh-agent" ~/.zshrc; then
-    printf "eval \`ssh-agent -s\`\n" >> ~/.zshrc
+    printf "if ! [ \$(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then\n  eval \`ssh-agent -s &>/dev/null\`\nfi" >> ~/.zshrc
   fi
 
   printf "Host github.com\n    UpdateHostKeys yes\n    IdentityFile /Users/$USER/.ssh/id_ed25519\n" >> ~/.ssh/config
