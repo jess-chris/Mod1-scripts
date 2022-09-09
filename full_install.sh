@@ -1,19 +1,38 @@
 #!/usr/bin/env bash
 
-# NVM setup
-exec curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash & 
-wait
+# Install node and check versions
+if [ -z $(which node) ] ; then
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  # NVM setup
+  exec curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash &>/dev/null
+  wait $!
 
-eval `nvm install 16`
+  export NVM_DIR="$HOME/.nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"\n[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-if ! [ $(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then
-  eval `ssh-agent -s &>/dev/null`
+  eval `nvm install 16 &>/dev/null`
+  wait $!
+else
+  if [ -z $(node --version | grep v16) ] ; then
+    eval `nvm install 16 &>/dev/null`
+    wait $!
+    eval `nvm use 16 &>/dev/null`
+    wait $!
+  fi
 fi
 
+# Install mocha globally 
+if [ -z $(which mocha) ] ; then
+  eval `npm i -g mocha &>/dev/null`
+  wait $!
+fi
+
+# Check for ssh-agent process
+if ! [ $(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then
+  eval `ssh-agent -s &>/dev/null`
+  wait $!
+fi
+
+# Check if key exists otherwise create a new one
 if [ -f "~/.ssh/id_ed25519" ]; then
   printf "SSH key already exists!"
 else
@@ -40,7 +59,6 @@ elif [[ $(uname) == "Darwin" ]]; then
 
 fi
 
-source ~/.bashrc
 
 pubkey=$(cat ~/.ssh/id_ed25519.pub)
 
