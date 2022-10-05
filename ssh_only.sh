@@ -26,9 +26,9 @@ if [[ $(uname) == "Linux" ]]; then
 #MAC OSX
 elif [[ $(uname) == "Darwin" ]]; then
 
-  if ! grep -Fq "ssh-agent" ~/.zshrc; then
-    printf "if ! [ \$(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then\n  eval \`ssh-agent -s &>/dev/null\`\nfi" >> ~/.zshrc
-  fi
+  # if ! grep -Fq "ssh-agent" ~/.zshrc; then
+  #   printf "if ! [ \$(ps ax | grep [s]sh-agent | wc -l) -gt 0 ] ; then\n  eval \`ssh-agent -s &>/dev/null\`\nfi" >> ~/.zshrc
+  # fi
 
   printf "Host github.com\n    UpdateHostKeys yes\n    IdentityFile /Users/$USER/.ssh/id_ed25519\n" >> ~/.ssh/config
 
